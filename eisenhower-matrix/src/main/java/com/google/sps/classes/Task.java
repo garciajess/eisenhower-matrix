@@ -29,6 +29,16 @@ public class Task {
         }
     };
 
+    /**
+    * A comparator for sorting tasks by their due date
+    */
+    public static final Comparator<Task> ORDER_BY_DUEDATE = new Comparator<Task>() {
+        @Override
+        public int compare(Task a, Task b) {
+            return a.getDueDate().compareTo(b.getDueDate());
+        }
+    };
+
     private String name;
     private Date dueDate;
     private int category;
