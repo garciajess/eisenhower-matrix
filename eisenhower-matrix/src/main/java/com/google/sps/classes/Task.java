@@ -15,7 +15,7 @@ public class Task {
     public static final Comparator<Task> ORDER_BY_CATEGORY = new Comparator<Task>() {
         @Override
         public int compare(Task a, Task b) {
-            return Integer.compare(b.category, a.category);
+            return Integer.compare(a.category, b.category);
         }
     };
 
@@ -53,13 +53,13 @@ public class Task {
     */
     public Task(String name, Date dueDate, int category, int duration) {
         this.name = name;
-        this.dueDate = date;
+        this.dueDate = dueDate;
         if (category < 1 || category > 4) {
             throw new IllegalArgumentException("Task category must be between 1 and 4 inclusive");
         } else {
             this.category = category;
         }
-        if(duration < 0) {
+        if(duration <= 0) {
             throw new IllegalArgumentException("Task duration must be greater than 0 minutes"); 
         } else {
             this.duration = duration;
