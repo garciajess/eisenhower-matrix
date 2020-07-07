@@ -1,5 +1,5 @@
 * {
-  font-family: 'Arial', 'serif';
+  font-family: 'Francois One', sans-serif;
 }
 
 body {
@@ -24,7 +24,7 @@ h1 {
 }
 
 #createForm {
-  height: 474px;
+  height: 250px;
   border: 5px solid white;
   overflow: scroll;
   margin: auto;
@@ -63,17 +63,24 @@ input {
   position: relative;
   bottom: 2px;
   padding: 3px;
-  width: 80%;
+  width: 97%;
 }
 
 select {
-  width: 83%;
+  width: 100%;
 }
 
 #submitButton {
-  position: relative;
-  bottom: -250px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 5px 10px 5px 10px;
+  bottom: -90px;
+}
+
+.hide {
+    display: none;
+}
+
+#login, #submitButton {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px 10px 5px 10px;
 }
