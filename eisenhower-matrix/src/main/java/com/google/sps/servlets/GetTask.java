@@ -15,6 +15,8 @@
 package com.google.sps.servlets;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
-import com.google.sps.data.Task;
+import com.google.sps.classes.Task;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -40,11 +42,11 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class GetTask extends HttpServlet {
 
     private List<Task> tasks;
-    private List<Integer> ids;
+    private List<Long> ids;
 
-    public DataServlet() {
+    public GetTask() {
         tasks = new ArrayList<Task>();
-        ids = new ArrayList<Integer>();
+        ids = new ArrayList<Long>();
     }
 
   @Override
@@ -54,26 +56,30 @@ public class GetTask extends HttpServlet {
     PreparedQuery pq = datastore.prepare(q);
     int duration = 30;
 
-        for (Entity task : pq.asIterable()) {
-            addTask((String) task.getProperty("name"), (Date) task.getProperty("date"), (int) task.getProperty("importance"), duration, task.getKey().getId());
-        }
-
       for (Task task : tasks) {
-          if (!ids.contains(task.getId())) {
             ids.add(task.getId());
             String json = taskToJson(task);
             response.setContentType("application/json;");
             response.getWriter().println(json);
-          } 
       }
     
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String name = request.getParameter("name");
-    Date date = request.getParameter("date");
-    int importance = request.getParameter("importance");
+    
+
+    try {
+        int name = parseStringToInt(request.getParameter("name"));
+        deleteTask((int) parseStringToInt(request.getParameter("id")));
+    } catch (NullPointerException error) {
+        String name = request.getParameter("name");
+        Date date = new Date();
+    try {
+        date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));
+    } catch (ParseException e) {}
+
+    int importance = parseStringToInt(request.getParameter("importance"));
     int duration = 30;
 
     Entity taskEntity = new Entity("Task");
@@ -83,12 +89,14 @@ public class GetTask extends HttpServlet {
     taskEntity.setProperty("date", date);
     taskEntity.setProperty("importance", importance);
     taskEntity.setProperty("duration", duration);
+    // look into id, they appear to be the same
     taskEntity.setProperty("id", taskEntity.getKey().getId());
 
     addTask(name, date, importance, duration, taskEntity.getKey().getId());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(taskEntity);
+    }
 
     response.sendRedirect("/");
   }
@@ -99,17 +107,29 @@ public class GetTask extends HttpServlet {
   
     }
 
-    private void addTask(String name, Date time, int importance, int duration, int id) {
+    private void addTask(String name, Date time, int importance, int duration, long id) {
         Task t = new Task(name, time, importance, duration, id);
         tasks.add(t);
     }
 
-    private void deleteTask(int id) {
+    private void deleteTask(long id) {
         Key taskEntityKey = KeyFactory.createKey("Task", id);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        tasks.removeIf(obj -> obj.getId() == id);
         datastore.delete(taskEntityKey);
     }
  
+    private int parseStringToInt(String s) {
+        if (s.matches("\\d+")) {
+            return Integer.parseInt(s);
+        } else {
+            if (s.length() == 1) {
+                return 4;
+            } else {
+                throw new NullPointerException("String is not a number");
+            }
+        }
+    }
 
   }
 

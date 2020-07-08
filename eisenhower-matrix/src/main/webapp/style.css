@@ -23,6 +23,10 @@ h1 {
   padding: 10px;
 }
 
+#taskForm {
+    display: flexbox;
+}
+
 #createForm {
   height: 300px;
   border: 5px solid white;
@@ -32,6 +36,26 @@ h1 {
   padding: 10px;
   background-color: #F0F0F0;
   box-shadow: 5px 10px #e6e6e660;
+}
+
+select, input {
+    min-width: 95%;
+}
+
+.task {
+    background-color: white;
+    margin: .5rem;
+    padding: .3rem;
+}
+
+.task-name {
+    font-weight: 900;
+    text-decoration: underline;
+    color: rgb(139, 37, 37);
+}
+
+.task-duration {
+    color: darkgray;
 }
 
 #description {

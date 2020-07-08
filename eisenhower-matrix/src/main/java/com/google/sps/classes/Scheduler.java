@@ -1,4 +1,4 @@
-package main.java.com.google.sps.classes;
+package com.google.sps.classes;
 
 import java.util.Calendar;
 import java.util.Collections;

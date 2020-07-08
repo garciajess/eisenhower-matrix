@@ -16,18 +16,14 @@
   <body>
     <h1>Eisenhower Matrix Scheduler</h1>
       <div id="authentification">
-          <button id="logout" class="btn btn-default" onclick="logout()">Logout</button>
-          <button id="login" class="btn btn-default" onclick="login()">Login</button>
+          <button id="logout" class="btn btn-default " onclick="logout()">Logout</button>
+          <button id="login" class="btn btn-default " onclick="login()">Login</button>
       </div>
     <div id="content">
       <p id="description">
           This tool is designed to map your tasks to time-blocks 
           in Google calendar based on priority and due date
       </p>
-      <div id="authentification">
-          <button id="login" onclick="login()">Login</button>
-          <button id="logout" onclick="logout()">Logout</button>
-      </div>
         <div id="taskForm">
         <div id="createForm">
           <form action="/add-task" method="POST">
@@ -48,11 +44,16 @@
                 <option value="4">Not important & not Urgent</option>
               </select>
             </div>
-            <input type="submit">Add Task</input>
+            <input type="submit" value="Add Task"/>
           </form>
+          
         </div>
-        <button type="button" id="submitButton" onclick="createCal()">Create Calendar!</button>
+        <div id="fetched-content" class="column">
+                <div><h1>Tasks:</h1></div>
+            </div>
+        </div>
+        <button type="button" id="submitButton" class="btn btn-default" onclick="createCal()">Create Calendar!</button>
       </div>   
-    </div>
+      
   </body>
 </html>
