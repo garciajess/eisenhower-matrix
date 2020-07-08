@@ -24,7 +24,7 @@ h1 {
 }
 
 #createForm {
-  height: 250px;
+  height: 300px;
   border: 5px solid white;
   overflow: scroll;
   margin: auto;
@@ -32,8 +32,6 @@ h1 {
   padding: 10px;
   background-color: #F0F0F0;
   box-shadow: 5px 10px #e6e6e660;
-  position: relative;
-  top: -20px;
 }
 
 #description {
@@ -46,41 +44,38 @@ h1 {
   font-size: 19px;
   padding: 10px;
   border-radius: 5px;
-}
-
-#inputHolder {
-  margin-top: 2%;
-  font-size: 20px;
+  position: relative;
+  top: -20px;
 }
 
 .required:before { 
   content:"*"; 
   color: red;
-  font-size: medium;
-}
-
-input {
-  position: relative;
-  bottom: 2px;
-  padding: 3px;
-  width: 97%;
-}
-
-select {
-  width: 100%;
-}
-
-#submitButton {
-  bottom: -90px;
 }
 
 .hide {
-    display: none;
+  display: none;
 }
 
-#login, #submitButton {
-    position: relative;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 5px 10px 5px 10px;
+#submit {
+  bottom: -90px;
+}
+
+#submit:hover, #login:hover, #logout:hover {
+  background-color: #daaeae;
+  color: white;
+}
+
+#submit {
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: ghostwhite;
+}
+
+#login, #logout {
+  background-color: ghostwhite;
+  position: relative;
+  left: 85%;
+  top: -65px;
 }
