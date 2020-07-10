@@ -105,13 +105,17 @@ input {
 }
 
 .hide {
-  display: none;
+  display: none!important;
 }
 
 #submitButton,
 #calButton {
   background-color: var(--highlight-color);
   color: var(--white-color);
+}
+
+#submitButton {
+    width: 100%;
 }
 
 #submitButton:hover,

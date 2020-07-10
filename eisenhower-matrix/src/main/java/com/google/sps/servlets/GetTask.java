@@ -68,6 +68,11 @@ public class GetTask extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     
+    if (request.getParameter("id") != null) {
+        deleteTask(new Long(request.getParameter("id")));
+        response.sendRedirect("/");
+        return;
+    } 
 
     try {
         int name = parseStringToInt(request.getParameter("name"));
@@ -89,7 +94,6 @@ public class GetTask extends HttpServlet {
     taskEntity.setProperty("date", date);
     taskEntity.setProperty("importance", importance);
     taskEntity.setProperty("duration", duration);
-    // look into id, they appear to be the same
     taskEntity.setProperty("id", taskEntity.getKey().getId());
 
     addTask(name, date, importance, duration, taskEntity.getKey().getId());
@@ -113,6 +117,7 @@ public class GetTask extends HttpServlet {
     }
 
     private void deleteTask(long id) {
+        System.out.println("Task with id " + id + " being deleted");
         Key taskEntityKey = KeyFactory.createKey("Task", id);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         tasks.removeIf(obj -> obj.getId() == id);

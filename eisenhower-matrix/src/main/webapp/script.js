@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   // every time there is a submission, fetch tasks
   getTasks();
-
+  
   if (userLoggedIn()) {
     loginStatus(true);
   } else {
@@ -77,15 +77,15 @@ async function getTasks() {
     let duration = document.createElement("span");
     duration.appendChild(document.createTextNode("Duration: "));
     duration.appendChild(document.createTextNode(task.duration));
+    duration.appendChild(document.createTextNode(" mins"));
     duration.classList += " task-duration";
 
     let deleteButton = document.createElement("button");
     deleteButton.innerText = "X";
     deleteButton.style.color = "red";
     deleteButton.addEventListener("click", function () {
-      // deleteComment(task.id);
+      deleteComment(task.id);
       curr_task.style.display = "none";
-      // todo: actually find a way to delete from database
     });
 
     curr_task.appendChild(name);
@@ -107,21 +107,15 @@ function createCal() {
 }
 
 function deleteComment(id) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = "/add-task";
-
-  const idField = document.createElement("input");
-  idField.name = "id";
+  const form = document.getElementById("delete-task-form");
+  const idField = document.getElementById("delete-task-param");
   idField.value = id;
-
-  form.appendChild(idField);
-
   form.submit();
 }
 
 async function userLoggedIn() {
   const response = await fetch("/authenticate");
   const text = await response.text();
+  console.log(text);
   return text.indexOf("login") !== -1;
 }
