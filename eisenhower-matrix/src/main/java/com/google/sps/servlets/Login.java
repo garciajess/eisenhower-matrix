@@ -34,10 +34,12 @@ public class Login extends HttpServlet {
       if (us.isUserLoggedIn()) {  
           String redirectUrl = "/";
           String logout = us.createLogoutURL(redirectUrl);
+          System.out.println("logged in - " + logout);
           response.getWriter().println(logout);
       } else {
           String redirectUrl = "/";
           String login = us.createLoginURL(redirectUrl);
+          System.out.println("not logged in - " + login);
           response.getWriter().println(login);
       }
   }
