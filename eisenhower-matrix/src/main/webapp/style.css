@@ -1,5 +1,14 @@
-* {
+*,
+::before,
+::after,
+html {
   font-family: 'Francois One', sans-serif;
+  box-sizing: border-box;
+  --hover-color: #daaeae;
+  --highlight-color: rgb(0, 60, 255);
+  --black-color: #252525;
+  --white-color: #eee;
+  --transp-white: rgba(240, 240, 240, 0.486);
 }
 
 body {
@@ -7,49 +16,91 @@ body {
   background-image: url("images/mountains.jpeg");
 }
 
+nav>h1 {
+  margin: 1rem;
+  background: var(--white-color);
+  padding: 1rem;
+}
+
 h1 {
   font-family: 'Francois One', sans-serif;
   margin: 0;
   padding: 20px 0 10px 0;
-  color: white;
   text-align: center;
-  background-color: #455573;
 }
 
 #content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-flow: row;
+  padding: 2rem;
+  margin: 0;
+}
+
+#taskForm {
+  display: flex;
+  margin-right: 2rem;
 }
 
 #createForm {
-  height: 300px;
-  border: 5px solid white;
+  min-height: 300px;
+  min-width: 400px;
+  border: 5px solid var(--white-color);
   overflow: scroll;
-  margin: auto;
-  width: 60%;
+  margin: 0 3rem 0 3rem;
   padding: 10px;
-  background-color: #F0F0F0;
+  background-color: var(--transp-white);
   box-shadow: 5px 10px #e6e6e660;
 }
 
-#description {
-  background-color: #daaeae;
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+#authentification {
+  margin-right: 1rem;
+}
+
+select,
+input {
+  min-width: 95%;
+}
+
+.task {
+  background-color: var(--transp-white);
+  margin: .5rem;
+  padding: .3rem;
+  display: flex;
   text-align: center;
-  color: white;
+}
+
+.task-name {
+  font-weight: 900;
+  text-decoration: underline;
+  color: var(--highlight-color);
+}
+
+.task span {
+  margin: 0.2rem;
+}
+
+.task button {
+  margin: 0 2rem;
+}
+
+.task-duration {
+  color: var(--black-color);
+}
+
+
+#description {
+  text-align: center;
+  color: var(--white-color);
   font-size: 19px;
   padding: 10px;
   border-radius: 5px;
-  position: relative;
-  top: -20px;
+  margin: 2rem;
+  outline: 1px solid var(--white-color);
 }
 
-.required:before { 
-  content:"*"; 
+.required:before {
+  content: "*";
   color: red;
 }
 
@@ -57,25 +108,29 @@ h1 {
   display: none;
 }
 
-#submit {
-  bottom: -90px;
+#submitButton,
+#calButton {
+  background-color: var(--highlight-color);
+  color: var(--white-color);
 }
 
-#submit:hover, #login:hover, #logout:hover {
-  background-color: #daaeae;
-  color: white;
+#submitButton:hover,
+#login:hover,
+#logout:hover,
+#calButton:hover {
+  background-color: var(--hover-color);
+  color: var(--white-color);
 }
 
 #submit {
   position: relative;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: ghostwhite;
+  background-color: var(--white-color);
 }
 
-#login, #logout {
-  background-color: ghostwhite;
+#login,
+#logout {
+  background-color: var(--white-color);
   position: relative;
-  left: 85%;
-  top: -65px;
 }

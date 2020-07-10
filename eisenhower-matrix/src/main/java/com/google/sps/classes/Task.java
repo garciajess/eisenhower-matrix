@@ -1,4 +1,4 @@
-package main.java.com.google.sps.classes;
+package com.google.sps.classes;
 
 import java.util.Date;
 import java.util.Comparator;
@@ -43,6 +43,7 @@ public class Task {
     private Date dueDate;
     private int category;
     private int duration;
+    private long id;
 
     /**
     * Creates an instance of a task 
@@ -50,8 +51,9 @@ public class Task {
     * @param dueDate The date that the task needs to be completed
     * @param category The task's category in the Eisenhower matrix, from 1 to 4
     * @param duration How long the task will take to complete in minutes
+    * @param id this is the id of a task in datastore
     */
-    public Task(String name, Date dueDate, int category, int duration) {
+    public Task(String name, Date dueDate, int category, int duration, long id) {
         this.name = name;
         this.dueDate = dueDate;
         if (category < 1 || category > 4) {
@@ -64,6 +66,7 @@ public class Task {
         } else {
             this.duration = duration;
         }
+        this.id = id;
     }
 
     /**
@@ -93,6 +96,14 @@ public class Task {
     public int getDuration() {
         return this.duration;
     }
+
+    /**
+    * Returns task id from Datastore
+    */
+    public long getId() {
+        return this.id;
+    }
+
     /**
     * Sets the category of the task. If an invalid argument is passed then 
     * an exception is thrown
