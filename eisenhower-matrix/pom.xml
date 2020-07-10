@@ -47,6 +47,11 @@
       <artifactId>google-oauth-client-java6</artifactId>
       <version>1.30.4</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client-jetty</artifactId>
+      <version>1.30.4</version>
+    </dependency>
 
   </dependencies>
 
