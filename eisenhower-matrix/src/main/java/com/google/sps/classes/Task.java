@@ -1,5 +1,7 @@
 package com.google.sps.classes;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Comparator;
 
@@ -81,6 +83,16 @@ public class Task {
     */
     public Date getDueDate() {
         return this.dueDate;
+    }
+
+    /**
+    * Converts the task due date to LocalDateTime format
+    * Used for Scheduler algorithm
+    */
+    public LocalDateTime getLDDueDate() {
+        return dueDate.toInstant()
+      .atZone(ZoneId.systemDefault())
+      .toLocalDateTime();
     }
 
     /**
