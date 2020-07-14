@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 import com.google.sps.classes.Task;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -51,13 +52,45 @@ public class GetTask extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query q = new Query("Task").addSort("StartTime", SortDirection.DESCENDING);
+    Query q = new Query("Task").addSort("duration", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery pq = datastore.prepare(q);
-    int duration = 30;
+
+    // String name = "";
+    // Date date = new Date();
+    // int importance = 1;
+
+    // if (request.getParameter("id") != null) {
+    //     deleteTask(new Long(request.getParameter("id")));
+    //     response.sendRedirect("/");
+    //     return;
+    // } 
+
+    // try {
+    //     date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));
+    // } catch (NullPointerException e) {
+    
+    // } catch (ParseException e) {
+
+    // }
+    
+    // try {
+    //     importance = parseStringToInt(request.getParameter("importance"));
+    // } catch (NullPointerException e) {};
+
+    // name = request.getParameter("name");
+    // int duration = 30;
+    
+    tasks.clear();
+    for (Entity task : pq.asIterable()) {
+          String name = (String) task.getProperty("name");
+          Date date = (Date) task.getProperty("date");
+          int importance = Math.toIntExact((Long) task.getProperty("importance"));
+          int duration = Math.toIntExact((Long) task.getProperty("duration"));
+           addTask(name, date, importance, duration, task.getKey().getId());
+    }
 
       for (Task task : tasks) {
-            ids.add(task.getId());
             String json = taskToJson(task);
             response.setContentType("application/json;");
             response.getWriter().println(json);
@@ -67,7 +100,9 @@ public class GetTask extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
+    String name = "";
+    Date date = new Date();
+
     if (request.getParameter("id") != null) {
         deleteTask(new Long(request.getParameter("id")));
         response.sendRedirect("/");
@@ -75,21 +110,22 @@ public class GetTask extends HttpServlet {
     } 
 
     try {
-        int name = parseStringToInt(request.getParameter("name"));
-        deleteTask((int) parseStringToInt(request.getParameter("id")));
+        // int nameInt = parseStringToInt(request.getParameter("name"));
+        deleteTask((Long) parseStringToLong(request.getParameter("id")));
     } catch (NullPointerException error) {
-        String name = request.getParameter("name");
-        Date date = new Date();
+        name = request.getParameter("name");
+        date = new Date();
+    }
+
     try {
         date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));
     } catch (ParseException e) {}
-
+    
     int importance = parseStringToInt(request.getParameter("importance"));
+    name = request.getParameter("name");
     int duration = 30;
 
     Entity taskEntity = new Entity("Task");
-    UserService us = UserServiceFactory.getUserService();
-
     taskEntity.setProperty("name", name);
     taskEntity.setProperty("date", date);
     taskEntity.setProperty("importance", importance);
@@ -100,9 +136,9 @@ public class GetTask extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(taskEntity);
-    }
 
     response.sendRedirect("/");
+  
   }
 
     private String taskToJson(Task task) {
@@ -111,17 +147,16 @@ public class GetTask extends HttpServlet {
   
     }
 
-    private void addTask(String name, Date time, int importance, int duration, long id) {
+    private void addTask(String name, Date time, int importance, int duration, Long id) {
         Task t = new Task(name, time, importance, duration, id);
         tasks.add(t);
     }
 
-    private void deleteTask(long id) {
-        System.out.println("Task with id " + id + " being deleted");
-        Key taskEntityKey = KeyFactory.createKey("Task", id);
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        tasks.removeIf(obj -> obj.getId() == id);
-        datastore.delete(taskEntityKey);
+    private void deleteTask(Long id) {
+            Key taskEntityKey = KeyFactory.createKey("Task", id);
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            tasks.removeIf(obj -> obj.getId() == id);
+            datastore.delete(taskEntityKey);
     }
  
     private int parseStringToInt(String s) {
@@ -130,6 +165,18 @@ public class GetTask extends HttpServlet {
         } else {
             if (s.length() == 1) {
                 return 4;
+            } else {
+                throw new NullPointerException("String is not a number");
+            }
+        }
+    }
+
+    private Long parseStringToLong(String s) {
+        if (s.matches("\\d+")) {
+            return Long.parseLong(s);
+        } else {
+            if (s.length() == 1) {
+                return new Long(4);
             } else {
                 throw new NullPointerException("String is not a number");
             }
