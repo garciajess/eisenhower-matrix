@@ -124,6 +124,7 @@ input {
 #calButton:hover {
   background-color: var(--hover-color);
   color: var(--white-color);
+  border-color: var(--white-color);
 }
 
 #submit {
