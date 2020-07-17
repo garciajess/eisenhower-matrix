@@ -1,11 +1,15 @@
 package com.google.sps.classes;
 
-import java.util.Calendar;
+
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Scheduler {
     
@@ -14,37 +18,38 @@ public class Scheduler {
         Collections.sort(tasks, Task.ORDER_BY_CATEGORY.thenComparing(Task.ORDER_BY_DUEDATE));
 
         // Starting Date to create time blocks
-        //We are scheduling for the next day starting from 8AM and ending at 8PM
-        Calendar cal = Calendar.getInstance();
+        Date timeBlockDate;
+
+        LocalDateTime blockStartTime = LocalDateTime.now();
         //Sets the calendar instance to 8AM in the next day
-        cal.add(Calendar.DATE, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 8);
-        cal.set(Calendar.MINUTE, 0);
-        Date currStartingDate = cal.getTime();
+        blockStartTime = blockStartTime.plusDays(1);
+        blockStartTime = blockStartTime.withHour(8);
+        blockStartTime = blockStartTime.withMinute(0);
+        
         
         Collection<TimeBlock> taskSchedule = new ArrayList<TimeBlock> ();
 
+        // Schedules each task for the next day starting from 8AM and ending at 8PM, rolling
+        // over to additional days if needed
         for (Task t : tasks) {
             //Checks if we need to schedule the rest of the tasks today
-            Calendar endingCal = (Calendar)cal.clone();
-            endingCal.add(Calendar.MINUTE, t.getDuration());
+            LocalDateTime blockEndTime = blockStartTime.plusMinutes(t.getDuration());
+
             //Prevents scheduling tasks past 8PM unless the task itself is longer 
             //than 12 hours.
-            if (endingCal.get(Calendar.HOUR_OF_DAY) < 20 && t.getDuration() < 720) {
-                cal.add(Calendar.DATE, 1);
-                cal.set(Calendar.HOUR_OF_DAY, 8);
-                cal.set(Calendar.MINUTE, 0);
-                currStartingDate = cal.getTime();
+            if (blockEndTime.getHour() < 20 && t.getDuration() < 720) {
+                blockStartTime = blockStartTime.plusDays(1);
+                blockStartTime = blockStartTime.withHour(8);
+                blockStartTime = blockStartTime.withMinute(0);
             } 
 
             //Creates and adds a new time block for the task 
-            TimeBlock newBlock = new TimeBlock(t, currStartingDate, null);
+            timeBlockDate = Date.from(blockStartTime.atZone(ZoneId.systemDefault()).toInstant());
+            TimeBlock newBlock = new TimeBlock(t,timeBlockDate, null);
             taskSchedule.add(newBlock);
 
             //Updates the starting date for the next time block
-            cal.setTime(newBlock.getEnd());
-            cal.add(Calendar.MINUTE, 1);
-            currStartingDate = cal.getTime();
+            blockStartTime = blockStartTime.plusMinutes(1);
         }
 
         return taskSchedule;
