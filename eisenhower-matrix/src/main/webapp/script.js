@@ -35,7 +35,6 @@ async function getTasks() {
 
     const response = await fetch("/add-task");
     const text = await response.text();
-    console.log("text: ");
     console.groupCollapsed(text);
     var all_tasks = text.split("\n");
     all_tasks = all_tasks.filter((x) => x.length > 0);
@@ -105,16 +104,14 @@ function deleteComment(id) {
 async function userLoggedIn() {
     const response = await fetch("/authenticate");
     const text = await response.text();
-    console.log(text);
     return text.indexOf("login") !== -1;
 }
 
 // fetch calendar data
 async function calendarGetData() {
-    console.log("need to get calendar data");
 
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyAjMcp7ri61JviqGvpy6_uCU4upTsCYyUw';
+      var API_KEY = 'AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU';
 
       // Array of API discovery doc URLs for APIs used by the quickstart
       var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
@@ -130,14 +127,12 @@ async function calendarGetData() {
     // Your code for handling the data you get from the API
         
         // On load, called to load the auth2 library and API client library.
-            console.log("gonna gapi load");
             gapi.load('client:auth2', initClient);
         
         // Initializes the API client library and sets up sign-in state
         // listeners.
         
         function initClient() {
-            console.log("init Client start");
             gapi.client.init({
             apiKey: API_KEY,
             clientId: CLIENT_ID,
@@ -161,7 +156,6 @@ async function calendarGetData() {
         // *  appropriately. After a sign-in, the API is called.
         // */
         function updateSigninStatus(isSignedIn) {
-            console.log("In update signin status");
             if (isSignedIn) {
             getTasks();
             authorizeButton.style.display = 'none';
@@ -181,7 +175,6 @@ async function calendarGetData() {
         // *  Sign in the user upon button click.
         // */
         function handleAuthClick(event) {
-            console.log(gapi.auth2.getAuthInstance().signIn());
             gapi.auth2.getAuthInstance().signIn();
             updateSigninStatus(true);
         }
@@ -212,7 +205,6 @@ async function calendarGetData() {
         // * appropriate message is printed.
         // */
         function listUpcomingEvents() {
-            console.log(document.getElementById("sample-events").innerText);
             if (document.getElementById("sample-events").innerText == "") {
                 gapi.client.calendar.events.list({
             'calendarId': 'primary',
