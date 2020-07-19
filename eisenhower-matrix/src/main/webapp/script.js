@@ -41,6 +41,20 @@ function loginStatus(status) {
   }
 }
 
+// checks if task if empty or only includes whitespace
+function checkTitle () {
+    let title = document.getElementById("taskName");
+    title.value = title.value.replace(/^\s+/, '').replace(/\s+$/, '');
+
+    if (title.value === '') {
+        /* title is empty or only whitespace */
+        document.getElementById('taskName').style.borderColor = "red";
+    } else {
+        /* title is valid */
+        getTasks();
+    }
+}
+
 // add each posted task to DOM; append it to #fetched-content div
 async function getTasks() {
   let task_div = document.createElement("div");
@@ -61,7 +75,7 @@ async function getTasks() {
 
     let name = document.createElement("span");
     name.innerText = task.name;
-    name.classList += " task-name";
+    name.classList += " task-name"; 
 
     let importance = document.createElement("span");
     importance.appendChild(document.createTextNode("[Lvl "));
