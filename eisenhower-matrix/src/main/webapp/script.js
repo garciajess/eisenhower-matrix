@@ -83,8 +83,9 @@ async function getTasks() {
     let deleteButton = document.createElement("button");
     deleteButton.innerText = "X";
     deleteButton.style.color = "red";
-    deleteButton.addEventListener("click", function () {
+    deleteButton.addEventListener("click", function (e) {
       deleteComment(task.id);
+      e.preventDefault();
       curr_task.style.display = "none";
     });
 
@@ -110,12 +111,14 @@ function deleteComment(id) {
   const form = document.getElementById("delete-task-form");
   const idField = document.getElementById("delete-task-param");
   idField.value = id;
+  form.addEventListener('submit', function(e) {
+      e.preventDefault();
+  });
   form.submit();
 }
 
 async function userLoggedIn() {
   const response = await fetch("/authenticate");
   const text = await response.text();
-  console.log(text);
   return text.indexOf("login") !== -1;
 }
