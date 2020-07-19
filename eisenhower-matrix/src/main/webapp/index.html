@@ -26,9 +26,9 @@
         <div id="taskForm">
         <div id="createForm">
           <form action="/add-task" method="POST">
-            <div class="form-group required" id="inputHolder">
+            <div class="form-group required" id="inputHolder taskTitle">
                 <label for="titleInput">Task Name:</label><br>
-                <input type="text" class="form-control" id="taskName" name="name" required>
+                <input type="text" class="form-control" id="taskName" name="name" onfocusout="checkTitle()" required>
             </div>
             <div class="form-group required" id="inputHolder">
                 <label for="dateInput">Complete by:</label><br>
