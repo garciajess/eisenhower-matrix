@@ -52,34 +52,9 @@ public class GetTask extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query q = new Query("Task").addSort("duration", SortDirection.DESCENDING);
+    Query q = new Query("Task").addSort("importance", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery pq = datastore.prepare(q);
-
-    // String name = "";
-    // Date date = new Date();
-    // int importance = 1;
-
-    // if (request.getParameter("id") != null) {
-    //     deleteTask(new Long(request.getParameter("id")));
-    //     response.sendRedirect("/");
-    //     return;
-    // } 
-
-    // try {
-    //     date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("date"));
-    // } catch (NullPointerException e) {
-    
-    // } catch (ParseException e) {
-
-    // }
-    
-    // try {
-    //     importance = parseStringToInt(request.getParameter("importance"));
-    // } catch (NullPointerException e) {};
-
-    // name = request.getParameter("name");
-    // int duration = 30;
     
     tasks.clear();
     for (Entity task : pq.asIterable()) {
@@ -87,7 +62,9 @@ public class GetTask extends HttpServlet {
           Date date = (Date) task.getProperty("date");
           int importance = Math.toIntExact((Long) task.getProperty("importance"));
           int duration = Math.toIntExact((Long) task.getProperty("duration"));
-           addTask(name, date, importance, duration, task.getKey().getId());
+          if (task.getKey().getId() != 0) {
+               addTask(name, date, importance, duration, task.getKey().getId());
+          } 
     }
 
       for (Task task : tasks) {
@@ -110,7 +87,6 @@ public class GetTask extends HttpServlet {
     } 
 
     try {
-        // int nameInt = parseStringToInt(request.getParameter("name"));
         deleteTask((Long) parseStringToLong(request.getParameter("id")));
     } catch (NullPointerException error) {
         name = request.getParameter("name");
@@ -149,7 +125,10 @@ public class GetTask extends HttpServlet {
 
     private void addTask(String name, Date time, int importance, int duration, Long id) {
         Task t = new Task(name, time, importance, duration, id);
-        tasks.add(t);
+        if (!ids.contains(id)) {
+            ids.add(id);
+            tasks.add(t);
+        }
     }
 
     private void deleteTask(Long id) {
