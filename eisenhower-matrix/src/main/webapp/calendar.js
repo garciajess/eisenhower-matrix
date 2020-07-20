@@ -171,6 +171,7 @@ async function calendarGetData() {
             });
 
             request.execute(function(event) {
+                console.log("terminee...", event);
                 appendPre("Event created: " + event.htmlLink);
             });
 
