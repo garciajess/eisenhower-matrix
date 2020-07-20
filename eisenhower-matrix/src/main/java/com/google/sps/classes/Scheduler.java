@@ -13,12 +13,9 @@ import java.util.List;
 
 public class Scheduler {
     
-    public Collection<TimeBlock> schedule(List<Task> tasks) {
+    public static Collection<TimeBlock> schedule(List<Task> tasks) {
         //sort tasks based on category, then by closest due date
         Collections.sort(tasks, Task.ORDER_BY_CATEGORY.thenComparing(Task.ORDER_BY_DUEDATE));
-
-        // Starting Date to create time blocks
-        Date timeBlockDate;
 
         LocalDateTime blockStartTime = LocalDateTime.now();
         //Sets the calendar instance to 8AM in the next day
@@ -37,19 +34,20 @@ public class Scheduler {
 
             //Prevents scheduling tasks past 8PM unless the task itself is longer 
             //than 12 hours.
-            if (blockEndTime.getHour() < 20 && t.getDuration() < 720) {
+            if (blockEndTime.getHour() > 20 && t.getDuration() < 720) {
                 blockStartTime = blockStartTime.plusDays(1);
                 blockStartTime = blockStartTime.withHour(8);
                 blockStartTime = blockStartTime.withMinute(0);
             } 
 
             //Creates and adds a new time block for the task 
-            timeBlockDate = Date.from(blockStartTime.atZone(ZoneId.systemDefault()).toInstant());
+
+            Date timeBlockDate = Date.from(blockStartTime.atZone(ZoneId.systemDefault()).toInstant());
             TimeBlock newBlock = new TimeBlock(t,timeBlockDate, null);
             taskSchedule.add(newBlock);
 
             //Updates the starting date for the next time block
-            blockStartTime = blockStartTime.plusMinutes(1);
+            blockStartTime = blockEndTime.plusMinutes(1);
         }
 
         return taskSchedule;

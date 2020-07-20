@@ -138,8 +138,51 @@ async function getTasks() {
 }
 
 // function to create the entire calander
-function createCal() {
+async function createCal() {
     console.log("creating calander...");
+    // const response = await fetch("/calendar");
+    // const text = await response.json().then(data =>{
+    // console.log(data);
+    // });
+    var tasks = await fetch('/calendar').then(res => res.json());
+    console.log(tasks);
+      
+    var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
+    var API_KEY = 'AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU';
+
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/calendar";
+    fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
+    .then(function() {
+        gapi.load("client:auth2", initClient);
+
+        function initClient() {
+            console.log("fetched google calendar api");
+
+            gapi.client.init({
+                apiKey: API_KEY,
+                clientId: CLIENT_ID,
+                discoveryDocs: DISCOVERY_DOCS,
+                scope: SCOPES
+            }).then(function () {
+                // Listen for sign-in state changes.
+                console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+                    var newCal = gapi.client.calendar.calendars.insert({
+                        "summary": "Task Schedule",
+                        "description": "Your tasks, scheduled by the Eisenhower Matrix."
+                    }).then(function(response) {
+                    });
+            });
+        }
+        
+    }).catch(function() {
+        console.log("o no");
+        console.error();
+    });
 }
 
 function deleteComment(id) {
@@ -169,7 +212,7 @@ async function calendarGetData() {
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+      var SCOPES = "https://www.googleapis.com/auth/calendar";
 
       var authorizeButton = document.getElementById('login');
       var signoutButton = document.getElementById('logout');
@@ -275,7 +318,8 @@ async function calendarGetData() {
                 if (!when) {
                     when = event.start.date;
                 }
-                appendPre(event.summary + ' (' + when + ')\n')
+                appendPre(event.summary + ' (' + when + ')\n');
+                // console.log(event);
                 }
             } else {
                 appendPre('No upcoming events found.');
