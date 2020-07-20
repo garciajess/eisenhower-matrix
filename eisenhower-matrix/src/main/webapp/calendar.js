@@ -11,11 +11,11 @@ var DISCOVERY_DOCS = [
 // included, separated by spaces.
 var SCOPES = "https://www.googleapis.com/auth/calendar";
 
-var authorizeButton = document.getElementById("login");
-var signoutButton = document.getElementById("logout");
-
 // fetch calendar data
 async function calendarGetData() {
+    var authorizeButton = document.getElementById("login");
+    var signoutButton = document.getElementById("logout");
+
     fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
         .then(function() {
             // Your code for handling the data you get from the API
@@ -136,6 +136,45 @@ async function calendarGetData() {
                         });
                 }
             }
+
+            console.log("trying to add an event");
+
+            var event = {
+                summary: "Google I/O 2015",
+                location: "800 Howard St., San Francisco, CA 94103",
+                description: "A chance to hear more about Google's developer products.",
+                start: {
+                    dateTime: "2020-07-20T09:00:00-07:00",
+                    timeZone: "America/Los_Angeles",
+                },
+                end: {
+                    dateTime: "2020-07-20T17:00:00-07:00",
+                    timeZone: "America/Los_Angeles",
+                },
+                recurrence: ["RRULE:FREQ=DAILY;COUNT=2"],
+                attendees: [
+                    { email: "eduardoluissd@gmail.com" },
+                    { email: "esantosdelgado1@sps-program.com" },
+                ],
+                reminders: {
+                    useDefault: false,
+                    overrides: [
+                        { method: "email", minutes: 24 * 60 },
+                        { method: "popup", minutes: 10 },
+                    ],
+                },
+            };
+
+            var request = gapi.client.calendar.events.insert({
+                calendarId: "primary",
+                resource: event,
+            });
+
+            request.execute(function(event) {
+                appendPre("Event created: " + event.htmlLink);
+            });
+
+            console.log("terminee...");
         })
         .catch(function() {
             console.error();
