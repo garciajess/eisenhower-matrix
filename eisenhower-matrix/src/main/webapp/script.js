@@ -32,11 +32,11 @@ function loginStatus(status) {
 // checks if task if empty or only includes whitespace
 function checkTitle() {
     let title = document.getElementById("taskName");
-    title.value = title.value.replace(/^\s+/, '').replace(/\s+$/, '');
+    title.value = title.value.replace(/^\s+/, "").replace(/\s+$/, "");
 
-    if (title.value === '') {
+    if (title.value === "") {
         /* title is empty or only whitespace */
-        document.getElementById('taskName').style.borderColor = "red";
+        document.getElementById("taskName").style.borderColor = "red";
     } else {
         /* title is valid */
         getTasks();
@@ -136,66 +136,74 @@ async function getTasks() {
             document.getElementById("fetched-content").appendChild(task_div);
         }
     }
+}
 
-    // function to create the entire calander
-    async function createCal() {
-        console.log("creating calander...");
-        // const response = await fetch("/calendar");
-        // const text = await response.json().then(data =>{
-        // console.log(data);
-        // });
-        var tasks = await fetch('/calendar').then(res => res.json());
-        console.log(tasks);
+// function to create the entire calander
+async function createCal() {
+    console.log("creating calander...");
+    // const response = await fetch("/calendar");
+    // const text = await response.json().then(data =>{
+    // console.log(data);
+    // });
+    var tasks = await fetch("/calendar").then((res) => res.json());
+    console.log(tasks);
 
-        var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-        var API_KEY = 'AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU';
+    var CLIENT_ID =
+        "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
+    var API_KEY = "AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU";
 
-        // Array of API discovery doc URLs for APIs used by the quickstart
-        var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = [
+        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+    ];
 
-        // Authorization scopes required by the API; multiple scopes can be
-        // included, separated by spaces.
-        var SCOPES = "https://www.googleapis.com/auth/calendar";
-        fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
-            .then(function() {
-                gapi.load("client:auth2", initClient);
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/calendar";
+    fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
+        .then(function() {
+            gapi.load("client:auth2", initClient);
 
-                function initClient() {
-                    console.log("fetched google calendar api");
+            function initClient() {
+                console.log("fetched google calendar api");
 
-                    gapi.client.init({
+                gapi.client
+                    .init({
                         apiKey: API_KEY,
                         clientId: CLIENT_ID,
                         discoveryDocs: DISCOVERY_DOCS,
-                        scope: SCOPES
-                    }).then(function() {
+                        scope: SCOPES,
+                    })
+                    .then(function() {
                         // Listen for sign-in state changes.
                         console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
-                        var newCal = gapi.client.calendar.calendars.insert({
-                            "summary": "Task Schedule",
-                            "description": "Your tasks, scheduled by the Eisenhower Matrix."
-                        }).then(function(response) {});
+                        var newCal = gapi.client.calendar.calendars
+                            .insert({
+                                summary: "Task Schedule",
+                                description: "Your tasks, scheduled by the Eisenhower Matrix.",
+                            })
+                            .then(function(response) {});
                     });
-                }
-
-            }).catch(function() {
-                console.log("o no");
-                console.error();
-            });
-    }
-
-    function deleteComment(id) {
-        const form = document.getElementById("delete-task-form");
-        const idField = document.getElementById("delete-task-param");
-        idField.value = id;
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+            }
+        })
+        .catch(function() {
+            console.log("o no");
+            console.error();
         });
-        form.submit();
-    }
+}
 
-    async function userLoggedIn() {
-        const response = await fetch("/authenticate");
-        const text = await response.text();
-        return text.indexOf("login") !== -1;
-    }
+function deleteComment(id) {
+    const form = document.getElementById("delete-task-form");
+    const idField = document.getElementById("delete-task-param");
+    idField.value = id;
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+    });
+    form.submit();
+}
+
+async function userLoggedIn() {
+    const response = await fetch("/authenticate");
+    const text = await response.text();
+    return text.indexOf("login") !== -1;
+}

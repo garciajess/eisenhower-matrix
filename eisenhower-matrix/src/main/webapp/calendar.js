@@ -1,20 +1,21 @@
+var CLIENT_ID =
+    "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
+var API_KEY = "AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU";
+
+// Array of API discovery doc URLs for APIs used by the quickstart
+var DISCOVERY_DOCS = [
+    "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+];
+
+// Authorization scopes required by the API; multiple scopes can be
+// included, separated by spaces.
+var SCOPES = "https://www.googleapis.com/auth/calendar";
+
+var authorizeButton = document.getElementById("login");
+var signoutButton = document.getElementById("logout");
+
 // fetch calendar data
 async function calendarGetData() {
-    var CLIENT_ID =
-        "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
-    var API_KEY = "AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU";
-
-    // Array of API discovery doc URLs for APIs used by the quickstart
-    var DISCOVERY_DOCS = [
-        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-    ];
-
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    var SCOPES = "https://www.googleapis.com/auth/calendar";
-
-    var authorizeButton = document.getElementById("login");
-    var signoutButton = document.getElementById("logout");
     fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
         .then(function() {
             // Your code for handling the data you get from the API
