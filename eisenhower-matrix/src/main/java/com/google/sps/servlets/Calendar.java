@@ -14,8 +14,8 @@
 
 package com.google.sps.servlets;
 
-// import com.google.appengine.api.users.UserService;
-// import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
@@ -63,23 +63,10 @@ public class Calendar extends HttpServlet {
 
         response.setContentType("application/json");
         Collection<TimeBlock> scheduledTasks = Scheduler.schedule(tasks);
-        // YYYY-MM-DDTHH:MM:SS.MMMZ
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
         response.getWriter().println(gson.toJson(scheduledTasks));
     }
-
-    // @Override
-    // public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //     response.setContentType("text/html");
-        
-    //     try {
-    //         calendarHandler.get();
-    //     } catch (GeneralSecurityException e) {
-    //         e.printStackTrace();
-    //     }
-    //     response.getWriter().println("Hey, WIP HERE");
-    // }
 
     private Task entityToTask(Entity e) {
         String name = (String)e.getProperty("name");

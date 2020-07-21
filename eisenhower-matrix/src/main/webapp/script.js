@@ -94,18 +94,11 @@ async function getTasks() {
 
 // function to create the entire calander
 async function createCal() {
-    console.log("creating calander...");
-    // const response = await fetch("/calendar");
-    // const text = await response.json().then(data =>{
-    // console.log(data);
-    // });
-
     //Gets scheduled tasks
     var tasks = await fetch('/calendar').then(res => res.json());
-    console.log(tasks);
       
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-    var API_KEY = 'AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU';
+    var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
 
     // Array of API discovery doc URLs for APIs used by the quickstart
     var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
@@ -115,10 +108,10 @@ async function createCal() {
     var SCOPES = "https://www.googleapis.com/auth/calendar";
     fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
     .then(function() {
+        //initializes api client
         gapi.load("client:auth2", initClient);
 
         function initClient() {
-            console.log("fetched google calendar api");
 
             gapi.client.init({
                 apiKey: API_KEY,
@@ -126,22 +119,18 @@ async function createCal() {
                 discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES
             }).then(function () {
-                // Listen for sign-in state changes.
-                console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+                // Creates and adds new calendar that will contain scheduled tasks
                     var newCal = gapi.client.calendar.calendars.insert({
                         "summary": "Task Schedule",
                         "description": "Your tasks, scheduled by the Eisenhower Matrix."
                     }).then(function(response) {
-                        console.log(response.result.id);
                         gapi.client.calendar.settings.get({setting:"timezone"}).then(
                             function(response2) {
+                                //Timezone that calendar is operating in
                                 var calTimeZone = JSON.parse(response2.body).value;
-                                console.log(calTimeZone);
+
+                                //Creates events for each task and adds them to calendar
                                 for (var t in Object.keys(tasks)){
-                                    // console.log(tasks[t]);
-                                    // var tDate = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                                    // console.log(tDate);
-                                    
                                     gapi.client.calendar.events.insert({
                                         "calendarId":response.result.id,
                                         "summary":tasks[t].task.name,
@@ -153,16 +142,16 @@ async function createCal() {
                                             dateTime:tasks[t].end,
                                             timeZone:calTimeZone
                                         }
-                                    }).then(response =>
-                                    console.log(response));
+                                    })
+                                    .then(response =>
+                                    console.log("Finished creating tasks"));
                                     }
                             });
                     });
             });
         }
-        
+        console.log("Finished calendar");
     }).catch(function() {
-        console.log("o no");
         console.error();
     });
 }
@@ -184,7 +173,7 @@ async function userLoggedIn() {
 async function calendarGetData() {
 
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU';
+      var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
 
       // Array of API discovery doc URLs for APIs used by the quickstart
       var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
