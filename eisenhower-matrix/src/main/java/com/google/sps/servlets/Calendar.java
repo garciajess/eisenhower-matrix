@@ -63,7 +63,8 @@ public class Calendar extends HttpServlet {
 
         response.setContentType("application/json");
         Collection<TimeBlock> scheduledTasks = Scheduler.schedule(tasks);
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+        // YYYY-MM-DDTHH:MM:SS.MMMZ
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
         response.getWriter().println(gson.toJson(scheduledTasks));
     }

@@ -1,3 +1,6 @@
+//find Timezone
+
+
 // fetch login link
 async function login() {
     const response = await fetch("/authenticate");
@@ -96,6 +99,8 @@ async function createCal() {
     // const text = await response.json().then(data =>{
     // console.log(data);
     // });
+
+    //Gets scheduled tasks
     var tasks = await fetch('/calendar').then(res => res.json());
     console.log(tasks);
       
@@ -127,6 +132,31 @@ async function createCal() {
                         "summary": "Task Schedule",
                         "description": "Your tasks, scheduled by the Eisenhower Matrix."
                     }).then(function(response) {
+                        console.log(response.result.id);
+                        gapi.client.calendar.settings.get({setting:"timezone"}).then(
+                            function(response2) {
+                                var calTimeZone = JSON.parse(response2.body).value;
+                                console.log(calTimeZone);
+                                for (var t in Object.keys(tasks)){
+                                    // console.log(tasks[t]);
+                                    // var tDate = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                    // console.log(tDate);
+                                    
+                                    gapi.client.calendar.events.insert({
+                                        "calendarId":response.result.id,
+                                        "summary":tasks[t].task.name,
+                                        "start":{
+                                            dateTime:tasks[t].start,
+                                            timeZone:calTimeZone
+                                        },
+                                        "end":{
+                                            dateTime:tasks[t].end,
+                                            timeZone:calTimeZone
+                                        }
+                                    }).then(response =>
+                                    console.log(response));
+                                    }
+                            });
                     });
             });
         }
