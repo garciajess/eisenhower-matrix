@@ -2,8 +2,49 @@
 document.addEventListener("DOMContentLoaded", function () {
   // every time there is a submission, fetch tasks
   getTasks();
+<<<<<<< HEAD
 
 });
+=======
+
+  if (userLoggedIn()) {
+    loginStatus(true);
+  } else {
+    loginStatus(false);
+  }
+});
+
+// fetch login link
+async function login() {
+  const response = await fetch("/authenticate");
+  const text = await response.text();
+  window.location.href = text;
+}
+
+// fetch logout link
+async function logout() {
+  const response = await fetch("/authenticate");
+  const text = await response.text();
+  window.location.href = text;
+}
+
+// hide login or logout button + form based on login status
+function loginStatus(status) {
+  const loginButton = document.getElementById("login");
+  const logoutButton = document.getElementById("logout");
+  const form = document.getElementById("taskForm");
+
+  if (status) {
+    loginButton.classList.add("hide");
+    logoutButton.classList.remove("hide");
+    form.classList.remove("hide");
+  } else {
+    loginButton.classList.remove("hide");
+    logoutButton.classList.add("hide");
+    form.classList.add("hide");
+  }
+}
+>>>>>>> 100aa4bc4bec18d1c8ed7b6a43c92e45d95b64b3
 
 // checks if task if empty or only includes whitespace
 function checkTitle() {
