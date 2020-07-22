@@ -58,7 +58,9 @@ public class Calendar extends HttpServlet {
 
         for (Entity t : pq.asIterable()) {
             Task task = entityToTask(t);
-            tasks.add(task);
+            if (t.getKey().getId() != 0) {
+                tasks.add(task);
+            }
         }
 
         response.setContentType("application/json");
@@ -67,18 +69,6 @@ public class Calendar extends HttpServlet {
 
         response.getWriter().println(gson.toJson(scheduledTasks));
     }
-
-    // @Override
-    // public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //     response.setContentType("text/html");
-        
-    //     try {
-    //         calendarHandler.get();
-    //     } catch (GeneralSecurityException e) {
-    //         e.printStackTrace();
-    //     }
-    //     response.getWriter().println("Hey, WIP HERE");
-    // }
 
     private Task entityToTask(Entity e) {
         String name = (String)e.getProperty("name");
