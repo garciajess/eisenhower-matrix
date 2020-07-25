@@ -1,6 +1,3 @@
-//find Timezone
-
-
 // fetch login link
 async function login() {
     const response = await fetch("/authenticate");
@@ -34,18 +31,21 @@ function loginStatus(status) {
 
 // add each posted task to DOM; append it to #fetched-content div
 async function getTasks() {
+    if (document.getElementById("tasks")) {
+        var tasks = document.getElementById("tasks");
+                tasks.parentNode.removeChild(tasks);
+    }
     let task_div = document.createElement("div");
-
+    task_div.id = "tasks";
     const response = await fetch("/add-task");
     const text = await response.text();
-    console.groupCollapsed(text);
+    // console.groupCollapsed(text);
     var all_tasks = text.split("\n");
     all_tasks = all_tasks.filter((x) => x.length > 0);
 
     all_tasks.forEach(function(val, idx, arr) {
         arr[idx] = JSON.parse(val);
     });
-
     for (let task of all_tasks) {
         let curr_task = document.createElement("div");
         curr_task.classList += "task justify-content-between";
@@ -96,7 +96,6 @@ async function getTasks() {
 async function createCal() {
     //Gets scheduled tasks
     var tasks = await fetch('/calendar').then(res => res.json());
-      
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
     var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
 
@@ -160,7 +159,6 @@ function deleteComment(id) {
     const form = document.getElementById("delete-task-form");
     const idField = document.getElementById("delete-task-param");
     idField.value = id;
-    form.submit();
 }
 
 async function userLoggedIn() {
@@ -173,17 +171,18 @@ async function userLoggedIn() {
 async function calendarGetData() {
 
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
+    var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
 
-      // Array of API discovery doc URLs for APIs used by the quickstart
-      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
 
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/calendar";
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/calendar";
 
-      var authorizeButton = document.getElementById('login');
-      var signoutButton = document.getElementById('logout');
+    var authorizeButton = document.getElementById('login');
+    var signoutButton = document.getElementById('logout');
+
     fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
     .then(function() {
     // Your code for handling the data you get from the API
@@ -208,6 +207,8 @@ async function calendarGetData() {
             updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
             authorizeButton.onclick = handleAuthClick;
             signoutButton.onclick = handleSignoutClick;
+            
+
             }, function(error) {
             appendPre(JSON.stringify(error, null, 2));
             });
@@ -217,19 +218,27 @@ async function calendarGetData() {
         // *  Called when the signed in status changes, to update the UI
         // *  appropriately. After a sign-in, the API is called.
         // */
-        function updateSigninStatus(isSignedIn) {
+        async function updateSigninStatus(isSignedIn) {
             if (isSignedIn) {
-            getTasks();
-            authorizeButton.style.display = 'none';
-            signoutButton.style.display = 'block';
-            document.getElementById("sample-events").classList.remove("hide")
-            document.getElementById("fetched-content").classList.remove("hide")
-            listUpcomingEvents();
+                
+                var putreq = await fetch("/add-task", {
+                    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: JSON.stringify(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail()) // body data type must match "Content-Type" header
+                }).then (response => response.json());
+                getTasks();
+                authorizeButton.style.display = 'none';
+                signoutButton.style.display = 'block';
+                document.getElementById("fetched-content").classList.remove("hide")
+                
+                listUpcomingEvents();
             } else {
-            authorizeButton.style.display = 'block';
-            signoutButton.style.display = 'none';
-            document.getElementById("sample-events").classList.add("hide");
-            document.getElementById("fetched-content").classList.add("hide")
+                authorizeButton.style.display = 'block';
+                signoutButton.style.display = 'none';
+                document.getElementById("fetched-content").classList.add("hide");
             }
         }
 
@@ -239,6 +248,7 @@ async function calendarGetData() {
         function handleAuthClick(event) {
             gapi.auth2.getAuthInstance().signIn();
             updateSigninStatus(true);
+
         }
 
         // /**
@@ -267,7 +277,6 @@ async function calendarGetData() {
         // * appropriate message is printed.
         // */
         function listUpcomingEvents() {
-            if (document.getElementById("sample-events").innerText == "") {
                 gapi.client.calendar.events.list({
             'calendarId': 'primary',
             'timeMin': (new Date()).toISOString(),
@@ -277,7 +286,7 @@ async function calendarGetData() {
             'orderBy': 'startTime'
             }).then(function(response) {
             var events = response.result.items;
-            appendPre('Upcoming events:\n');
+            console.log('Upcoming events:\n');
 
             if (events.length > 0) {
                 for (i = 0; i < events.length; i++) {
@@ -286,15 +295,13 @@ async function calendarGetData() {
                 if (!when) {
                     when = event.start.date;
                 }
-                appendPre(event.summary + ' (' + when + ')\n');
-                // console.log(event);
+                console.log(event.summary + ' (' + when + ')\n');
                 }
             } else {
-                appendPre('No upcoming events found.');
+                console.log('No upcoming events found.');
             }
             });
             }
-        }
 
     })
     .catch(function() {
