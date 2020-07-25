@@ -29,8 +29,23 @@ function loginStatus(status) {
     }
 }
 
+// checks if task if empty or only includes whitespace
+function checkTitle () {
+    let title = document.getElementById("taskName");
+    title.value = title.value.replace(/^\s+/, '').replace(/\s+$/, '');
+
+    if (title.value === '') {
+        /* title is empty or only whitespace */
+        document.getElementById('taskName').style.borderColor = "red";
+    } else {
+        /* title is valid */
+        getTasks();
+    }
+}
+
 // add each posted task to DOM; append it to #fetched-content div
 async function getTasks() {
+
     if (document.getElementById("tasks")) {
         var tasks = document.getElementById("tasks");
                 tasks.parentNode.removeChild(tasks);
@@ -74,8 +89,9 @@ async function getTasks() {
         let deleteButton = document.createElement("button");
         deleteButton.innerText = "X";
         deleteButton.style.color = "red";
-        deleteButton.addEventListener("click", function() {
+        deleteButton.addEventListener("click", function(e) {
             deleteComment(task.id);
+            e.preventDefault();
             curr_task.style.display = "none";
         });
 
@@ -156,15 +172,19 @@ async function createCal() {
 }
 
 function deleteComment(id) {
-    const form = document.getElementById("delete-task-form");
-    const idField = document.getElementById("delete-task-param");
-    idField.value = id;
+  const form = document.getElementById("delete-task-form");
+  const idField = document.getElementById("delete-task-param");
+  idField.value = id;
+  form.addEventListener('submit', function(e) {
+      e.preventDefault();
+  });
+  form.submit();
 }
 
 async function userLoggedIn() {
-    const response = await fetch("/authenticate");
-    const text = await response.text();
-    return text.indexOf("login") !== -1;
+  const response = await fetch("/authenticate");
+  const text = await response.text();
+  return text.indexOf("login") !== -1;
 }
 
 // fetch calendar data
