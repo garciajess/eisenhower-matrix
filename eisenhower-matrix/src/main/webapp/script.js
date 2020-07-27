@@ -58,6 +58,7 @@ function checkTitle() {
 // add each posted task to DOM; append it to #fetched-content div
 async function getTasks() {
   let task_div = document.createElement("div");
+  let spinner = document.getElementById("spinner");
 
   const response = await fetch("/add-task");
   const text = await response.text();
@@ -68,8 +69,6 @@ async function getTasks() {
   all_tasks.forEach(function (val, idx, arr) {
     arr[idx] = JSON.parse(val);
   });
-
-  console.log(all_tasks);
 
   for (let task of all_tasks) {
     let curr_task = document.createElement("div");
@@ -113,8 +112,9 @@ async function getTasks() {
     task_div.appendChild(curr_task);
   }
 
-  if (document.getElementById("fetched-content")) {
-    document.getElementById("fetched-content").appendChild(task_div);
+  if (document.getElementById("task-list")) {
+    spinner.style.display = "none";
+    document.getElementById("task-list").appendChild(task_div);
   }
 }
 
@@ -123,6 +123,11 @@ async function createCal() {
   console.log("creating calander...");
   var tasks = await fetch("/calendar").then((res) => res.json());
   console.log(tasks);
+  let spinner = document.getElementById("spinner");
+  let taskView = document.getElementById("task-view");
+  taskView.style.display = "none";
+  spinner.style.display = "flex";
+  
 
   var CLIENT_ID =
     "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
@@ -151,7 +156,8 @@ async function createCal() {
             scope: SCOPES,
           })
           .then(function () {
-            // Listen for sign-in state changes.
+            // Listen for sign-in state changes.'
+            spinner.style.display = "none";
             console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
             var newCal = gapi.client.calendar.calendars
               .insert({
@@ -163,9 +169,11 @@ async function createCal() {
       }
     })
     .catch(function () {
-      console.log("o no");
+    spinner.style.display = "none";
       console.error();
     });
+
+    spinner.style.display = "flex";
 }
 
 function deleteComment(id) {
