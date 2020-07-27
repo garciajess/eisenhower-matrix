@@ -52,15 +52,12 @@ async function getTasks() {
     }
     let task_div = document.createElement("div");
     task_div.id = "tasks";
-    const response = await fetch("/add-task");
-    const text = await response.text();
+    const text = await fetch("/add-task").then(response => response.text());
+    console.log(text);
     // console.groupCollapsed(text);
-    var all_tasks = text.split("\n");
-    all_tasks = all_tasks.filter((x) => x.length > 0);
+    var all_tasks = text.split("\n").filter((x) => x.length > 0);
 
-    all_tasks.forEach(function(val, idx, arr) {
-        arr[idx] = JSON.parse(val);
-    });
+    all_tasks.forEach((val, idx, arr) => arr[idx] = JSON.parse(val));
     for (let task of all_tasks) {
         let curr_task = document.createElement("div");
         curr_task.classList += "task justify-content-between";
@@ -89,9 +86,9 @@ async function getTasks() {
         let deleteButton = document.createElement("button");
         deleteButton.innerText = "X";
         deleteButton.style.color = "red";
-        deleteButton.addEventListener("click", function(e) {
+        deleteButton.addEventListener("click", e=> {
             deleteComment(task.id);
-            e.preventDefault();
+            // e.preventDefault();
             curr_task.style.display = "none";
         });
 
