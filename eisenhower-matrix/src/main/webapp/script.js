@@ -2,10 +2,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   // every time there is a submission, fetch tasks
   getTasks();
-<<<<<<< HEAD
-
-});
-=======
 
   if (userLoggedIn()) {
     loginStatus(true);
@@ -44,7 +40,6 @@ function loginStatus(status) {
     form.classList.add("hide");
   }
 }
->>>>>>> 100aa4bc4bec18d1c8ed7b6a43c92e45d95b64b3
 
 // checks if task if empty or only includes whitespace
 function checkTitle() {
