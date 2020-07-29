@@ -131,7 +131,7 @@ async function createCal() {
 
   var CLIENT_ID =
     "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
-  var API_KEY = "AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU";
+  var API_KEY = "AIzaSyD9NyWzf_SCDYegk8IGSOsSS0yQLPNPWeU";
 
   // Array of API discovery doc URLs for APIs used by the quickstart
   var DISCOVERY_DOCS = [
@@ -194,53 +194,75 @@ async function userLoggedIn() {
 
 // fetch calendar data
 async function calendarGetData() {
-  var CLIENT_ID =
-    "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
-  var API_KEY = "AIzaSyBtsuyHcg_Ei9wf2bdx7IZ-DdY56CnY3jU";
+    var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
+    var API_KEY = 'AIzaSyD9NyWzf_SCDYegk8IGSOsSS0yQLPNPWeU';
 
-  // Array of API discovery doc URLs for APIs used by the quickstart
-  var DISCOVERY_DOCS = [
-    "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-  ];
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
 
-  // Authorization scopes required by the API; multiple scopes can be
-  // included, separated by spaces.
-  var SCOPES = "https://www.googleapis.com/auth/calendar";
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/calendar";
 
-  var authorizeButton = document.getElementById("login");
-  var signoutButton = document.getElementById("logout");
-  fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
-    .then(function () {
-      // Your code for handling the data you get from the API
+    var authorizeButton = document.getElementById('login');
+    var signoutButton = document.getElementById('logout');
 
-      // On load, called to load the auth2 library and API client library.
-      gapi.load("client:auth2", initClient);
-
-      // Initializes the API client library and sets up sign-in state
-      // listeners.
-
-      function initClient() {
-        gapi.client
-          .init({
+    fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
+    .then(function() {
+    // Your code for handling the data you get from the API
+        
+        // On load, called to load the auth2 library and API client library.
+            gapi.load('client:auth2', initClient);
+        
+        // Initializes the API client library and sets up sign-in state
+        // listeners.
+        
+        function initClient() {
+            gapi.client.init({
             apiKey: API_KEY,
             clientId: CLIENT_ID,
             discoveryDocs: DISCOVERY_DOCS,
-            scope: SCOPES,
-          })
-          .then(
-            function () {
-              // Listen for sign-in state changes.
-              gapi.auth2
-                .getAuthInstance()
-                .isSignedIn.listen(updateSigninStatus);
+            scope: SCOPES
+            }).then(function () {
+            // Listen for sign-in state changes.
+            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
 
-              // Handle the initial sign-in state.
-              updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-              authorizeButton.onclick = handleAuthClick;
-              signoutButton.onclick = handleSignoutClick;
-            },
-            function (error) {
-              appendPre(JSON.stringify(error, null, 2));
+            // Handle the initial sign-in state.
+            updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            authorizeButton.onclick = handleAuthClick;
+            signoutButton.onclick = handleSignoutClick;
+            
+
+            }, function(error) {
+            appendPre(JSON.stringify(error, null, 2));
+            });
+        }
+
+        // /**
+        // *  Called when the signed in status changes, to update the UI
+        // *  appropriately. After a sign-in, the API is called.
+        // */
+        async function updateSigninStatus(isSignedIn) {
+            if (isSignedIn) {
+                
+                var putreq = await fetch("/add-task", {
+                    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: JSON.stringify(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail()) // body data type must match "Content-Type" header
+                }).then (response => response.json());
+                getTasks();
+                authorizeButton.style.display = 'none';
+                signoutButton.style.display = 'block';
+                document.getElementById("fetched-content").classList.remove("hide")
+                
+                listUpcomingEvents();
+            } else {
+                authorizeButton.style.display = 'block';
+                signoutButton.style.display = 'none';
+                document.getElementById("fetched-content").classList.add("hide");
             }
           );
       }
@@ -263,57 +285,54 @@ async function calendarGetData() {
           document.getElementById("sample-events").classList.add("hide");
           document.getElementById("fetched-content").classList.add("hide");
         }
-      }
 
-      // /**
-      // *  Sign in the user upon button click.
-      // */
-      function handleAuthClick(event) {
-        gapi.auth2.getAuthInstance().signIn();
-        updateSigninStatus(true);
-      }
+        // /**
+        // *  Sign in the user upon button click.
+        // */
+        function handleAuthClick(event) {
+            gapi.auth2.getAuthInstance().signIn();
+            updateSigninStatus(true);
 
-      // /**
-      // *  Sign out the user upon button click.
-      // */
-      function handleSignoutClick(event) {
-        gapi.auth2.getAuthInstance().signOut();
-        updateSigninStatus(false);
-      }
+        }
 
-      // /**
-      // * Append a pre element to the body containing the given message
-      // * as its text node. Used to display the results of the API call.
-      // *
-      // * @param {string} message Text to be placed in pre element.
-      // */
-      function appendPre(message) {
-        var pre = document.getElementById("sample-events");
-        var textContent = document.createTextNode(message + "\n");
-        pre.appendChild(textContent);
-      }
+        // /**
+        // *  Sign out the user upon button click.
+        // */
+        function handleSignoutClick(event) {
+            gapi.auth2.getAuthInstance().signOut();
+            updateSigninStatus(false);
+        }
 
-      // /**
-      // * Print the summary and start datetime/date of the next ten events in
-      // * the authorized user's calendar. If no events are found an
-      // * appropriate message is printed.
-      // */
-      function listUpcomingEvents() {
-        if (document.getElementById("sample-events").innerText == "") {
-          gapi.client.calendar.events
-            .list({
-              calendarId: "primary",
-              timeMin: new Date().toISOString(),
-              showDeleted: false,
-              singleEvents: true,
-              maxResults: 10,
-              orderBy: "startTime",
-            })
-            .then(function (response) {
-              var events = response.result.items;
-              appendPre("Upcoming events:\n");
+        // /**
+        // * Append a pre element to the body containing the given message
+        // * as its text node. Used to display the results of the API call.
+        // *
+        // * @param {string} message Text to be placed in pre element.
+        // */
+        function appendPre(message) {
+            var pre = document.getElementById('sample-events');
+            var textContent = document.createTextNode(message + '\n');
+            pre.appendChild(textContent);
+        }
 
-              if (events.length > 0) {
+        // /**
+        // * Print the summary and start datetime/date of the next ten events in
+        // * the authorized user's calendar. If no events are found an
+        // * appropriate message is printed.
+        // */
+        function listUpcomingEvents() {
+                gapi.client.calendar.events.list({
+            'calendarId': 'primary',
+            'timeMin': (new Date()).toISOString(),
+            'showDeleted': false,
+            'singleEvents': true,
+            'maxResults': 10,
+            'orderBy': 'startTime'
+            }).then(function(response) {
+            var events = response.result.items;
+            console.log('Upcoming events:\n');
+
+            if (events.length > 0) {
                 for (i = 0; i < events.length; i++) {
                   var event = events[i];
                   var when = event.start.dateTime;
@@ -323,12 +342,13 @@ async function calendarGetData() {
                   appendPre(event.summary + " (" + when + ")\n");
                   // console.log(event);
                 }
-              } else {
-                appendPre("No upcoming events found.");
-              }
+                console.log(event.summary + ' (' + when + ')\n');
+                }
+            } else {
+                console.log('No upcoming events found.');
+            }
             });
-        }
-      }
+            }
     })
     .catch(function () {
       console.error();

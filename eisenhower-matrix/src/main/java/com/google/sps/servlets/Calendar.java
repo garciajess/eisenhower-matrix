@@ -14,8 +14,8 @@
 
 package com.google.sps.servlets;
 
-// import com.google.appengine.api.users.UserService;
-// import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
@@ -29,12 +29,15 @@ import com.google.gson.GsonBuilder;
 import com.google.sps.classes.Task;
 import com.google.sps.classes.Scheduler;
 import com.google.sps.classes.TimeBlock;
+import com.google.sps.servlets.GetTask;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import javax.servlet.annotation.WebServlet;
@@ -50,7 +53,10 @@ public class Calendar extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query q = new Query("Task");
+        String email = GetTask.getEmail();
+        FilterPredicate filter = new FilterPredicate("email",FilterOperator.EQUAL, email);
+
+        Query q = new Query("Task").setFilter(filter);        
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);
 
@@ -65,7 +71,7 @@ public class Calendar extends HttpServlet {
 
         response.setContentType("application/json");
         Collection<TimeBlock> scheduledTasks = Scheduler.schedule(tasks);
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
         response.getWriter().println(gson.toJson(scheduledTasks));
     }
