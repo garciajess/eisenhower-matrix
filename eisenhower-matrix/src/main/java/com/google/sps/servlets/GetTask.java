@@ -59,6 +59,8 @@ public class GetTask extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    
+
         FilterPredicate filter = new FilterPredicate("email",FilterOperator.EQUAL, email);
     
         Query q = new Query("Task").setFilter(filter);
@@ -66,6 +68,7 @@ public class GetTask extends HttpServlet {
         PreparedQuery pq = datastore.prepare(q);
         Gson gson = new Gson();
         int duration = 30;
+        tasks.clear();
         for (Entity e : pq.asIterable()) {
             Task task = entityToTask(e);
             response.setContentType("application/json;");
@@ -101,7 +104,6 @@ public class GetTask extends HttpServlet {
     } 
 
     try {
-        // int nameInt = parseStringToInt(request.getParameter("name"));
         deleteTask((Long) parseStringToLong(request.getParameter("id")));
     } catch (NullPointerException error) {
         name = request.getParameter("name");
@@ -141,7 +143,10 @@ public class GetTask extends HttpServlet {
 
     private void addTask(String name, Date time, int importance, int duration, Long id) {
         Task t = new Task(name, time, importance, duration, id);
-        tasks.add(t);
+        if (!ids.contains(id)) {
+            ids.add(id);
+            tasks.add(t);
+        }
     }
 
     private void deleteTask(Long id) {
@@ -157,7 +162,12 @@ public class GetTask extends HttpServlet {
         Long importance = (Long)e.getProperty("importance");
         Long duration = (Long)e.getProperty("duration");
         Long id = (Long)e.getKey().getId();
-        return new Task(name, date, importance.intValue(), duration.intValue(), id.longValue());
+        Task t = new Task(name, date, importance.intValue(), duration.intValue(), id.longValue());
+        if (!ids.contains(id)) {
+            ids.add(id);
+            tasks.add(t);
+        }
+        return t;
     }
  
     private int parseStringToInt(String s) {

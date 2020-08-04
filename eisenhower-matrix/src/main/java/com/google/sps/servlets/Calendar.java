@@ -64,7 +64,9 @@ public class Calendar extends HttpServlet {
 
         for (Entity t : pq.asIterable()) {
             Task task = entityToTask(t);
-            tasks.add(task);
+            if (t.getKey().getId() != 0) {
+                tasks.add(task);
+            }
         }
 
         response.setContentType("application/json");
@@ -72,7 +74,6 @@ public class Calendar extends HttpServlet {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
         response.getWriter().println(gson.toJson(scheduledTasks));
-        
     }
 
     private Task entityToTask(Entity e) {

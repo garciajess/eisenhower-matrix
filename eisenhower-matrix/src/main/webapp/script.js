@@ -1,179 +1,187 @@
+// check login status on load
+document.addEventListener("DOMContentLoaded", function () {
+  // every time there is a submission, fetch tasks
+  getTasks();
+
+  if (userLoggedIn()) {
+    loginStatus(true);
+  } else {
+    loginStatus(false);
+  }
+});
+
 // fetch login link
 async function login() {
-    const response = await fetch("/authenticate");
-    const text = await response.text();
-    window.location.href = text;
+  const response = await fetch("/authenticate");
+  const text = await response.text();
+  window.location.href = text;
 }
 
 // fetch logout link
 async function logout() {
-    const response = await fetch("/authenticate");
-    const text = await response.text();
-    window.location.href = text;
+  const response = await fetch("/authenticate");
+  const text = await response.text();
+  window.location.href = text;
 }
 
 // hide login or logout button + form based on login status
 function loginStatus(status) {
-    const loginButton = document.getElementById("login");
-    const logoutButton = document.getElementById("logout");
-    const form = document.getElementById("taskForm");
+  const loginButton = document.getElementById("login");
+  const logoutButton = document.getElementById("logout");
+  const form = document.getElementById("taskForm");
 
-    if (status) {
-        loginButton.classList.add("hide");
-        logoutButton.classList.remove("hide");
-        form.classList.remove("hide");
-    } else {
-        loginButton.classList.remove("hide");
-        logoutButton.classList.add("hide");
-        form.classList.add("hide");
-    }
+  if (status) {
+    loginButton.classList.add("hide");
+    logoutButton.classList.remove("hide");
+    form.classList.remove("hide");
+  } else {
+    loginButton.classList.remove("hide");
+    logoutButton.classList.add("hide");
+    form.classList.add("hide");
+  }
 }
 
 // checks if task if empty or only includes whitespace
-function checkTitle () {
-    let title = document.getElementById("taskName");
-    title.value = title.value.replace(/^\s+/, '').replace(/\s+$/, '');
+function checkTitle() {
+  let title = document.getElementById("taskName");
+  title.value = title.value.replace(/^\s+/, "").replace(/\s+$/, "");
 
-    if (title.value === '') {
-        /* title is empty or only whitespace */
-        document.getElementById('taskName').style.borderColor = "red";
-    } else {
-        /* title is valid */
-        getTasks();
-    }
+  if (title.value === "") {
+    /* title is empty or only whitespace */
+    document.getElementById("taskName").style.borderColor = "red";
+  } else {
+    /* title is valid */
+    getTasks();
+  }
 }
 
 // add each posted task to DOM; append it to #fetched-content div
 async function getTasks() {
+  let task_div = document.createElement("div");
+  let spinner = document.getElementById("spinner");
 
-    if (document.getElementById("tasks")) {
-        var tasks = document.getElementById("tasks");
-                tasks.parentNode.removeChild(tasks);
-    }
-    let task_div = document.createElement("div");
-    task_div.id = "tasks";
-    const text = await fetch("/add-task").then(response => response.text());
-    console.log(text);
-    // console.groupCollapsed(text);
-    var all_tasks = text.split("\n").filter((x) => x.length > 0);
+  const response = await fetch("/add-task");
+  const text = await response.text();
 
-    all_tasks.forEach((val, idx, arr) => arr[idx] = JSON.parse(val));
-    for (let task of all_tasks) {
-        let curr_task = document.createElement("div");
-        curr_task.classList += "task justify-content-between";
+  var all_tasks = text.split("\n");
+  all_tasks = all_tasks.filter((x) => x.length > 0);
 
-        let name = document.createElement("span");
-        name.innerText = task.name;
-        name.classList += " task-name";
+  all_tasks.forEach(function (val, idx, arr) {
+    arr[idx] = JSON.parse(val);
+  });
 
-        let importance = document.createElement("span");
-        importance.appendChild(document.createTextNode("[Lvl "));
-        importance.appendChild(document.createTextNode(task.category));
-        importance.appendChild(document.createTextNode("]"));
-        importance.classList += " task-importance";
+  for (let task of all_tasks) {
+    let curr_task = document.createElement("div");
+    curr_task.classList += "task justify-content-between";
 
-        let date = document.createElement("span");
-        date.appendChild(document.createTextNode("Date: "));
-        date.appendChild(document.createTextNode(task.dueDate));
-        date.classList += " task-date";
+    let name = document.createElement("span");
+    name.innerText = task.name;
+    name.classList += " task-name";
 
-        let duration = document.createElement("span");
-        duration.appendChild(document.createTextNode("Duration: "));
-        duration.appendChild(document.createTextNode(task.duration));
-        duration.appendChild(document.createTextNode(" mins"));
-        duration.classList += " task-duration";
+    let importance = document.createElement("span");
+    importance.appendChild(document.createTextNode("[Lvl "));
+    importance.appendChild(document.createTextNode(task.category));
+    importance.appendChild(document.createTextNode("]"));
+    importance.classList += " task-importance";
 
-        let deleteButton = document.createElement("button");
-        deleteButton.innerText = "X";
-        deleteButton.style.color = "red";
-        deleteButton.addEventListener("click", e=> {
-            deleteComment(task.id);
-            // e.preventDefault();
-            curr_task.style.display = "none";
-        });
+    let date = document.createElement("span");
+    date.appendChild(document.createTextNode("Date: "));
+    date.appendChild(document.createTextNode(task.dueDate));
+    date.classList += " task-date";
 
-        curr_task.appendChild(name);
-        curr_task.appendChild(importance);
-        curr_task.appendChild(date);
-        curr_task.appendChild(duration);
-        curr_task.appendChild(deleteButton);
-        task_div.appendChild(curr_task);
-    }
+    let duration = document.createElement("span");
+    duration.appendChild(document.createTextNode("Duration: "));
+    duration.appendChild(document.createTextNode(task.duration));
+    duration.appendChild(document.createTextNode(" mins"));
+    duration.classList += " task-duration";
 
-    if (document.getElementById("fetched-content")) {
-        document.getElementById("fetched-content").appendChild(task_div);
-    }
+    let deleteButton = document.createElement("button");
+    deleteButton.innerText = "X";
+    deleteButton.style.color = "red";
+    deleteButton.addEventListener("click", function (e) {
+      deleteComment(task.id);
+      e.preventDefault();
+      curr_task.style.display = "none";
+    });
+
+    curr_task.appendChild(name);
+    curr_task.appendChild(importance);
+    curr_task.appendChild(date);
+    curr_task.appendChild(duration);
+    curr_task.appendChild(deleteButton);
+    task_div.appendChild(curr_task);
+  }
+
+  if (document.getElementById("task-list")) {
+    spinner.style.display = "none";
+    document.getElementById("task-list").appendChild(task_div);
+  }
 }
 
 // function to create the entire calander
 async function createCal() {
-    //Gets scheduled tasks
-    var tasks = await fetch('/calendar').then(res => res.json());
-    var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-    var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
+  console.log("creating calander...");
+  var tasks = await fetch("/calendar").then((res) => res.json());
+  console.log(tasks);
+  let spinner = document.getElementById("spinner");
+  let taskView = document.getElementById("task-view");
+  taskView.style.display = "none";
+  spinner.style.display = "flex";
+  
 
-    // Array of API discovery doc URLs for APIs used by the quickstart
-    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+  var CLIENT_ID =
+    "470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com";
+  var API_KEY = "AIzaSyD9NyWzf_SCDYegk8IGSOsSS0yQLPNPWeU";
 
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    var SCOPES = "https://www.googleapis.com/auth/calendar";
-    fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
-    .then(function() {
-        //initializes api client
-        gapi.load("client:auth2", initClient);
+  // Array of API discovery doc URLs for APIs used by the quickstart
+  var DISCOVERY_DOCS = [
+    "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+  ];
 
-        function initClient() {
+  // Authorization scopes required by the API; multiple scopes can be
+  // included, separated by spaces.
+  var SCOPES = "https://www.googleapis.com/auth/calendar";
+  fetch("https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest") // Call the fetch function passing the url of the API as a parameter
+    .then(function () {
+      gapi.load("client:auth2", initClient);
 
-            gapi.client.init({
-                apiKey: API_KEY,
-                clientId: CLIENT_ID,
-                discoveryDocs: DISCOVERY_DOCS,
-                scope: SCOPES
-            }).then(function () {
-                // Creates and adds new calendar that will contain scheduled tasks
-                    var newCal = gapi.client.calendar.calendars.insert({
-                        "summary": "Task Schedule",
-                        "description": "Your tasks, scheduled by the Eisenhower Matrix."
-                    }).then(function(response) {
-                        gapi.client.calendar.settings.get({setting:"timezone"}).then(
-                            function(response2) {
-                                //Timezone that calendar is operating in
-                                var calTimeZone = JSON.parse(response2.body).value;
+      function initClient() {
+        console.log("fetched google calendar api");
 
-                                //Creates events for each task and adds them to calendar
-                                for (var t in Object.keys(tasks)){
-                                    gapi.client.calendar.events.insert({
-                                        "calendarId":response.result.id,
-                                        "summary":tasks[t].task.name,
-                                        "start":{
-                                            dateTime:tasks[t].start,
-                                            timeZone:calTimeZone
-                                        },
-                                        "end":{
-                                            dateTime:tasks[t].end,
-                                            timeZone:calTimeZone
-                                        }
-                                    })
-                                    .then(response =>
-                                    console.log("Finished creating tasks"));
-                                    }
-                            });
-                    });
-            });
-        }
-        console.log("Finished calendar");
-    }).catch(function() {
-        console.error();
+        gapi.client
+          .init({
+            apiKey: API_KEY,
+            clientId: CLIENT_ID,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES,
+          })
+          .then(function () {
+            // Listen for sign-in state changes.'
+            spinner.style.display = "none";
+            console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+            var newCal = gapi.client.calendar.calendars
+              .insert({
+                summary: "Task Schedule",
+                description: "Your tasks, scheduled by the Eisenhower Matrix.",
+              })
+              .then(function (response) {});
+          });
+      }
+    })
+    .catch(function () {
+    spinner.style.display = "none";
+      console.error();
     });
+
+    spinner.style.display = "flex";
 }
 
 function deleteComment(id) {
   const form = document.getElementById("delete-task-form");
   const idField = document.getElementById("delete-task-param");
   idField.value = id;
-  form.addEventListener('submit', function(e) {
-      e.preventDefault();
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
   });
   form.submit();
 }
@@ -186,9 +194,8 @@ async function userLoggedIn() {
 
 // fetch calendar data
 async function calendarGetData() {
-
     var CLIENT_ID = '470404283189-q3gbv28dhmra1bg82g1evcn4c6gt3d2k.apps.googleusercontent.com';
-    var API_KEY = 'AIzaSyAEXSdXQrLWuCEGsP1Usxi_lS4GTXmRRKA';
+    var API_KEY = 'AIzaSyD9NyWzf_SCDYegk8IGSOsSS0yQLPNPWeU';
 
     // Array of API discovery doc URLs for APIs used by the quickstart
     var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
@@ -257,6 +264,26 @@ async function calendarGetData() {
                 signoutButton.style.display = 'none';
                 document.getElementById("fetched-content").classList.add("hide");
             }
+          );
+      }
+
+      // /**
+      // *  Called when the signed in status changes, to update the UI
+      // *  appropriately. After a sign-in, the API is called.
+      // */
+      function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          getTasks();
+          authorizeButton.style.display = "none";
+          signoutButton.style.display = "block";
+          document.getElementById("sample-events").classList.remove("hide");
+          document.getElementById("fetched-content").classList.remove("hide");
+          listUpcomingEvents();
+        } else {
+          authorizeButton.style.display = "block";
+          signoutButton.style.display = "none";
+          document.getElementById("sample-events").classList.add("hide");
+          document.getElementById("fetched-content").classList.add("hide");
         }
 
         // /**
@@ -307,10 +334,13 @@ async function calendarGetData() {
 
             if (events.length > 0) {
                 for (i = 0; i < events.length; i++) {
-                var event = events[i];
-                var when = event.start.dateTime;
-                if (!when) {
+                  var event = events[i];
+                  var when = event.start.dateTime;
+                  if (!when) {
                     when = event.start.date;
+                  }
+                  appendPre(event.summary + " (" + when + ")\n");
+                  // console.log(event);
                 }
                 console.log(event.summary + ' (' + when + ')\n');
                 }
@@ -319,9 +349,8 @@ async function calendarGetData() {
             }
             });
             }
-
     })
-    .catch(function() {
-        console.error();
+    .catch(function () {
+      console.error();
     });
 }
